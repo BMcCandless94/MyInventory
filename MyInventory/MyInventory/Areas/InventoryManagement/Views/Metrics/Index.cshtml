@@ -1,0 +1,621 @@
+﻿@model MyInventory.Areas.InventoryManagement.Metrics.Models.MetricsViewModel
+@{
+    ViewBag.Title = "MyInventory Metrics";
+    Layout = "~/Areas/InventoryManagement/Views/Shared/_MetricsLayout.cshtml";
+}
+
+<div class="h-100 w-100 d-flex flex-column overflow-hidden">
+    @if (Model.Transactions.Count < 1)
+    {
+        <!--No Transactions-->
+        <div class="font-italic lead p-5 text-center text-dark" style="font-size: 1.35em;">
+            You currently have no transactions. Create some Items and perform some transactions to view inventory metrics.
+        </div>
+    }
+    else
+    {
+        <div class="w-100 border-bottom border-sitecoolblue p-3 d-flex align-items-center overflow-hidden" style="height: 12em;">
+            <div class="d-inline-block">
+                <span class="font-weight-bold" style="font-size: 1.25em">Options:</span>
+            </div>
+            <div class="d-inline-block h-100 ml-2 pl-2 border-left border-sitecoolblue">
+                <label class="font-weight-bold">Time Axis</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="timeSelector" id="timeAxis1" value="day" checked />
+                    <label class="form-check-label" for="timeAxis1">By Day</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="timeSelector" id="timeAxis2" value="month" />
+                    <label class="form-check-label" for="timeAxis1">By Month</label>
+                </div>
+            </div>
+            <div class="d-inline-block h-100 ml-2 pl-2 border-left border-sitecoolblue">
+                <label class="font-weight-bold">Date Range</label>
+                <div class="w-100 text-right">
+                    <span>Start Date</span>
+                    <input type="date" name="dateSelector" id="startDate" value="@DateTime.Today.AddDays(-30).ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="w-100 text-right">
+                    <span>End Date</span>
+                    <input type="date" name="dateSelector" id="endDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="d-inline-block h-100 ml-2 pl-2 border-left border-sitecoolblue overflow-auto">
+                <label class="font-weight-bold">Warehouses</label>
+                @foreach (string wh in Model.Transactions.Select(x => x.Warehouse).Distinct())
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked name="warehouseSelector" value="@wh" />
+                        <label class="form-check-label">@wh</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="flex-grow-1 w-100 overflow-hidden">
+            <div class="h-100 w-100 overflow-auto text-dark">
+                <!--# of transactions per warehouse-->
+                <div class="row px-0 pt-3 m-0">
+                    <div class="col">
+                        <span class="group-title">Transaction Counts</span>
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-6">
+                        <label class="chart-title">Total Transactions by Warehouse</label>
+                        <canvas id="numTransactionChart" style="height: 15em; width: 100%;"></canvas>
+                    </div>
+                    <div class="col-6">
+                        <label class="chart-title">Total Transactions by Warehouse and Date</label>
+                        <canvas id="numTransactionChartByTime" style="height: 15em; width: 100%;"></canvas>
+                    </div>
+                </div>
+                <hr />
+                <div class="row px-0 pt-3 m-0">
+                    <div class="col">
+                        <div class="form-inline">
+                            <span class="group-title">Inventory Counts</span>
+                            <select class="form-control ml-4" id="inventoryItemSelector" style="max-width: 35em;">
+                                @foreach (var item in Model.Transactions.GroupBy(x => new { x.Warehouse, x.Item }, (group) => new { Warehouse = group.Warehouse, Item = group.Item, ItemID = group.ItemID }).SelectMany(x => x).Distinct())
+                                {
+                                    <option value="@item.ItemID">@item.Warehouse - @item.Item</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-0 m-0">
+                    <div class="col-6">
+                        <label class="chart-title">Item Inventory By Transaction</label>
+                        <canvas id="numInventoryChartTransaction" style="height: 15em; width: 100%;"></canvas>
+                    </div>
+                    <div class="col-6">
+                        <label class="chart-title">Item Inventory By Time</label>
+                        <canvas id="numInventoryChart" style="height: 15em; width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .group-title {
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+    .chart-title {
+        margin: 0;
+        padding-top: 1em;
+    }
+
+</style>
+
+<script>
+    //Date to string helper
+    Date.prototype.mmddyy = function() {
+      var mm = this.getMonth() + 1; // getMonth() is zero-based
+      var dd = this.getDate();
+
+      return [(mm>9 ? '' : '0') + mm,
+              (dd>9 ? '' : '0') + dd,
+              this.getFullYear()].join('/');
+    };
+    Date.prototype.mmyy = function() {
+      var mm = this.getMonth() + 1; // getMonth() is zero-based
+
+      return [(mm>9 ? '' : '0') + mm,
+              this.getFullYear()].join('/');
+    };
+    function StartDate() {
+        return new Date(new Date(new Date($('#startDate').val()).toDateString()).getTime() + 86400000);
+    }
+    function EndDate() {
+        return new Date(new Date(new Date($('#endDate').val()).toDateString()).getTime() + (86400000 * 2));
+    }
+
+    //Store the data from the controller into a javascript object
+    var MasterDataSet = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Transactions))');
+    for (var i in MasterDataSet) {
+        MasterDataSet[i].JSDate = new Date(new Date(MasterDataSet[i].TransactionTime).getTime());
+    }
+
+    function FilteredDataSet() {
+        //Make a deep copy of the master data set
+        var retVal = Object.assign([], MasterDataSet);
+        
+        //Get the global start and end dates
+        var startDate = StartDate();
+        var endDate = EndDate();
+
+        //Get the global warehouse list
+        var whs = [];
+        $('input[name=warehouseSelector]').each(function() {
+            if ($(this).is(':checked')) {
+                whs.push($(this).val());
+            }
+        });
+
+        //Filter it according to the global filters
+        for (var i = retVal.length - 1; i >= 0; i--) {
+            if (!(retVal[i].JSDate >= startDate && retVal[i].JSDate < endDate && whs.includes(retVal[i].Warehouse))) {
+                //Remove this item
+                retVal.splice(i, 1);
+            }
+        }
+
+        return retVal;
+    }
+
+    function Warehouses() {
+        var retVal = [];
+
+        //Get the filtered data set
+        var dataSet = FilteredDataSet();
+        
+        for (var i in dataSet) {
+            //check if the array includes this warehouse
+            if (!retVal.includes(dataSet[i].Warehouse)) {
+                //If it doesn't, add it to the array
+                retVal.push(dataSet[i].Warehouse);
+            }
+        }
+
+        //Return the array
+        return retVal;
+    }
+
+    //Now we have n object that has all of the data that we need for any of our charts, as well as two objects that make
+    //it easier to know what warehouses there are as well as what items are in those warehouses
+    
+    //Chart declarations
+    Chart.defaults.global.defaultColor = 'rgba(0, 0, 0, 0.35)';
+    var numTransactionChart;
+    var numTransactionChartByTime;
+    var numInventoryChart;
+    var numInventoryChartTransaction;
+
+
+    //Default configurations
+    const colors = ['rgba(0, 0, 255, 0.35)', 'rgba(255, 0, 0, 0.35)', 'rgba(0, 153, 51, 0.35)', 'rgba(153, 0, 153, 0.35)', 'rgba(255, 102, 0, 0.35)', 'rgba(255, 255, 0, 0.35)', 'rgba(102, 50, 0, 0.35)'];
+    const dCfgBar = {
+        type: 'bar',
+        data: {
+            labels: ['BAR NAMES'],
+            datasets: [{
+                label: 'DATASET NAME',
+                data: [1],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    };
+    const dCfgLine = {
+        type: 'line',
+        data: {
+            labels: ['LINE NAMES'],
+            datasets: [{
+                label: 'DATASET NAME',
+                data: [1]
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    };
+
+    //Configuration Update Functions
+    function updateNumTransactionChart() {
+        //Get a copy of the default bar config
+        var newConfig = Object.assign({}, dCfgBar);
+
+        //Get the filtered dataset
+        var filteredData = FilteredDataSet();
+        
+        //Make some updates
+        var labels = Warehouses();
+        var data = [];
+        var dataColors = [];
+        var dataBorders = [];
+        
+        var currVal;
+        for (var i in labels) {
+            currVal = 0;
+            for (var x in filteredData) {
+                if (filteredData[x].Warehouse == labels[i]) {
+                    currVal++;
+                }
+            }
+            data.push(currVal);
+            dataColors.push(GetColor(0));
+            dataBorders.push(GetColor(0).replace('0.35', '1'));
+        }
+
+        newConfig.data = {
+            labels: labels,
+            datasets: [{
+                label: 'Total Transactions By Warehouse',
+                data: data,
+                backgroundColor: dataColors,
+                borderColor: dataBorders,
+                borderWidth: 1
+            }]
+        };
+
+        if (numTransactionChart == null) {
+            numTransactionChart = new Chart($('#numTransactionChart'), newConfig);
+        } else {
+            numTransactionChart.data = newConfig.data;
+            numTransactionChart.update();
+        }    
+    }
+
+    function updateNumTransactionChartByTime() {
+        
+        //Get a copy of the default bar config
+        var newConfig = Object.assign({}, dCfgBar);
+
+        //Get the filtered dataset
+        var filteredData = FilteredDataSet();
+    
+        //Get the settings we need to adhere to
+        var startDate = StartDate();
+        var endDate = EndDate();
+        var byDay; 
+        if ($('#timeAxis1').is(':checked')) {
+            byDay = true;
+        } else {
+            byDay = false;
+        }
+    
+        //Set up some stuff we will need
+        var labels = [];
+        var datasets = [];
+        var groups = Warehouses();
+
+        //Set up the labels, which will be the time axis
+        var i = 0;
+        while ((startDate.getTime() + (i * (1000 * 60 * 60 * 24))) < endDate.getTime()) {
+            if (byDay) {
+                labels.push(new Date(startDate.getTime() + (i * (1000 * 60 * 60 * 24))).mmddyy());
+            } else {
+                let month = new Date(startDate.getTime() + (i * (1000 * 60 * 60 * 24))).mmyy();
+                if (!labels.includes(month)) {labels.push(month);}
+            }
+            i++;
+        }
+
+        //Loop through the groups and set up a dataset for each one.
+        for (var i in groups) {
+            var data = [];
+            var dataColors = [];
+            var dataBorders = [];
+            
+            //Loop through the labels
+            for (var x in labels) {
+                //This is either a day or month for a certain group. Sum up the number of transactions for this group during this time period
+                var count = 0;
+                for (var y in filteredData) {
+                    if (filteredData[y].Warehouse == groups[i]) {
+                        if (byDay && filteredData[y].JSDate.mmddyy() == labels[x]) {
+                            count++;
+                        } else if (!byDay && filteredData[y].JSDate.mmyy() == labels[x]) {
+                            count++;
+                        }
+                    }
+                }
+
+                //We have now counted up how many there were. push it into the dataset
+                data.push(count);
+                dataColors.push(GetColor(i));
+                dataBorders.push(GetColor(i).replace('0.35', '1'));
+            }
+            
+            //Add the dataset
+            datasets.push({
+                label: groups[i],
+                data: data,
+                backgroundColor: dataColors,
+                borderColor: dataBorders,
+                borderWidth: 1
+            });
+        }
+        
+        //Update the data in the newconfig
+        newConfig.data = {
+            labels: labels,
+            datasets: datasets
+        };
+        
+        //Update the options to specify that this is a stacked column chart
+        newConfig.options.scales.yAxes[0].stacked = true;
+        newConfig.options.scales.xAxes = [{stacked: true}];
+        
+        //Update the chart
+        if (numTransactionChartByTime == null) {
+            numTransactionChartByTime = new Chart($('#numTransactionChartByTime'), newConfig);
+        } else {
+            numTransactionChartByTime.data = newConfig.data;
+            numTransactionChartByTime.options = newConfig.options;
+            numTransactionChartByTime.update();
+        } 
+    }
+
+    function updateNumInventoryChartTransaction() {
+        //Get a copy of the default line config
+        var newConfig = Object.assign({}, dCfgLine);
+
+        //Get the filtered dataset
+        var filteredData = FilteredDataSet();
+    
+        //Get the settings we need to adhere to
+        var startDate = StartDate();
+        var endDate = EndDate();
+        var byDay; 
+        if ($('#timeAxis1').is(':checked')) {
+            byDay = true;
+        } else {
+            byDay = false;
+        }
+        var itemID = $('#inventoryItemSelector').val();
+    
+        //Set up some stuff we will need
+        var labels = [];
+        var datasets = [];
+        var data = [];
+        var dataColors = [];
+
+        //Loop through the filtered data
+        //This should already be in order by time
+        for (var i in filteredData) {
+            //check if this is for the item we are looking at
+            if (filteredData[i].ItemID == itemID) {
+                //Add it
+                labels.push(filteredData[i].JSDate.mmddyy());
+                data.push(filteredData[i].NewAmount);
+                dataColors.push(GetColor(0));
+            }
+        }
+
+        //Set up the dataset and add it to the array
+        datasets.push({
+            label: 'Quantity',
+            data: data,
+            backgroundColor: dataColors
+        });
+
+        //Update the data in the newconfig
+        newConfig.data = {
+            labels: labels,
+            datasets: datasets
+        };
+
+        //Update the chart
+        if (numInventoryChartTransaction == null) {
+            numInventoryChartTransaction = new Chart($('#numInventoryChartTransaction'), newConfig);
+        } else {
+            numInventoryChartTransaction.data = newConfig.data;
+            numInventoryChartTransaction.update();
+        } 
+    }
+
+    function updateNumInventoryChart() {
+        //Get a copy of the default line config
+        var newConfig = Object.assign({}, dCfgLine);
+
+        //Get the filtered dataset
+        var filteredData = FilteredDataSet();
+    
+        //Get the settings we need to adhere to
+        var startDate = StartDate();
+        var endDate = EndDate();
+        var byDay; 
+        if ($('#timeAxis1').is(':checked')) {
+            byDay = true;
+        } else {
+            byDay = false;
+        }
+        var itemID = $('#inventoryItemSelector').val();
+    
+        //Set up some stuff we will need
+        var labels = [];
+        var datasets = [];
+        var data = [];
+        var dataColors = [];
+
+        //Set up the labels, which will be the time axis
+        var i = 0;
+        while ((startDate.getTime() + (i * (1000 * 60 * 60 * 24))) < endDate.getTime()) {
+            if (byDay) {
+                labels.push(new Date(startDate.getTime() + (i * (1000 * 60 * 60 * 24))).mmddyy());
+            } else {
+                let month = new Date(startDate.getTime() + (i * (1000 * 60 * 60 * 24))).mmyy();
+                if (!labels.includes(month)) {labels.push(month);}
+            }
+            i++;
+        }
+        
+        var lastVal = null;
+        var lastValPeriod = '';
+        var count = 0;
+        
+        //Loop through the labels
+        for (var i in labels) {
+            //Reset the count to 0
+            count = 0;
+
+            
+
+            //Check what the time axis is
+            if (byDay) {
+                //Loop through the filtered data set and find any values for this day
+                for (var x in filteredData) {
+                    //Check if this is the current item and day
+                    if (filteredData[x].ItemID == itemID && filteredData[x].JSDate.mmddyy() == labels[i]) {
+                        //check if this is the same period as last val
+                        if (lastVal == null || lastValPeriod != labels[i]) {
+                            lastVal = 0;
+                            lastValPeriod = labels[i];
+                        }
+
+                        //Add this to last val and increment the count
+                        lastVal += filteredData[x].NewAmount;
+                        count++;
+                    }
+                }
+
+                //Get the average for the day if we found any transactions
+                if (count != 0) {lastVal = (lastVal / count);}
+
+                //Add it to the data
+                data.push(lastVal);
+                dataColors.push(GetColor(0));
+            } else {
+                //Loop through the filtered data set and find any values for this day
+                for (var x in filteredData) {
+                    //Check if this is the current item and day
+                    if (filteredData[x].ItemID == itemID && filteredData[x].JSDate.mmyy() == labels[i]) {
+                        //check if this is the same period as last val
+                        if (lastVal == null || lastValPeriod != labels[i]) {
+                            lastVal = 0;
+                            lastValPeriod = labels[i];
+                        }
+
+                        //Add this to last val and increment the count
+                        lastVal += filteredData[x].NewAmount;
+                        count++;
+                    }
+                }
+
+                //Get the average for the day if we found any transactions
+                if (count != 0) {lastVal = (lastVal / count);}
+
+                //Add it to the data
+                data.push(lastVal);
+                dataColors.push(GetColor(0));       
+
+            }
+        }
+
+        //Set up the dataset and add it to the array
+        datasets.push({
+            label: 'Average Quantity',
+            data: data,
+            backgroundColor: dataColors
+        });
+
+        //Update the data in the newconfig
+        newConfig.data = {
+            labels: labels,
+            datasets: datasets
+        };
+
+        //Update the chart
+        if (numInventoryChart == null) {
+            numInventoryChart = new Chart($('#numInventoryChart'), newConfig);
+        } else {
+            numInventoryChart.data = newConfig.data;
+            numInventoryChart.update();
+        } 
+    }
+
+    var ConfigUpdateFuncs = [{
+        Section: 'Overall',
+        Chart: 'numTransactionChart',
+        Update: updateNumTransactionChart
+    },
+    {
+        Section: 'Overall',
+        Chart: 'numTransactionChartByTime',
+        Update: updateNumTransactionChartByTime
+    },
+    {
+        Section: 'ItemInventory',
+        Chart: 'numInventoryChart',
+        Update: updateNumInventoryChart
+    },
+    {
+        Section: 'ItemInventory',
+        Chart: 'numInventoryChartTransaction',
+        Update: updateNumInventoryChartTransaction
+    }];
+
+    function UpdateChart(ChartName) {
+        ConfigUpdateFuncs.find(x => x.Chart == ChartName).Update();
+    }
+    function UpdateSection(SectionName) {
+        for (var i in ConfigUpdateFuncs) {
+            if (ConfigUpdateFuncs[i].Section == SectionName) {
+                ConfigUpdateFuncs[i].Update();
+            }
+        }
+    }
+    function UpdateAll() {
+        for (var i in ConfigUpdateFuncs) {
+            ConfigUpdateFuncs[i].Update();
+        }
+    }
+
+    function GetColor(index) {
+        let i = index;
+        while (i >= colors.length) {
+            i -= colors.length;
+        }
+
+        return colors[i];
+    }
+
+
+    $(document).ready(function() {
+         UpdateAll();
+
+        //Handlers for global options updates
+        $('input[name=dateSelector]').on('change', function() {
+            UpdateAll();
+        });
+        $('input[name=timeSelector]').on('change', function() {
+            UpdateAll();
+        });
+        $('input[name=warehouseSelector]').on('change', function() {
+            UpdateAll();
+        });
+
+        //Handlers for inventory options
+        $('#inventoryItemSelector').on('change', function() {
+            UpdateSection('ItemInventory');
+        });
+    });
+</script>

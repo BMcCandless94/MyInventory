@@ -1,0 +1,44 @@
+﻿@using MyInventory.Library.Extensions;
+@{
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+@using (Html.BeginHtmlBlock("HeadScripts"))
+{
+    @Scripts.Render("~/bundles/chart")
+}
+
+@using (Html.BeginHtmlBlock("RootStyles"))
+{
+    @Styles.Render("~/Content/chart")
+}
+
+@using (Html.BeginHtmlBlock("RootScripts"))
+{
+    <script>
+        $(document).ready(function () {
+            $('.menu-item').each(function () {
+                if ($(this).find('div').first().text() == 'Metrics') {
+                    $(this).addClass('active');
+                    console.log('Setting Metrics tab active');
+                }
+            });
+        });
+    </script>
+}
+
+    <div class="h-100 w-100 overflow-hidden d-flex flex-column">
+        <div class="w-100 p-3 border-bottom border-sitecoolblue" style="font-size: 2.25em;">
+            <svg class="text-siteoffwhite bg-sitewarmblue rounded p-2" viewBox="0, 0, 20, 20" height="2em">
+                <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#bar-chart" />
+            </svg>
+            <span class="text-dark">Metrics</span>
+        </div>
+        <div class="w-100 flex-grow-1 overflow-hidden">
+            <div class="h-100 w-100 overflow-hidden d-flex">
+                <div class="h-100 flex-grow-1 overflow-hidden">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>

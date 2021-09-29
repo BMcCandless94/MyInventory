@@ -1,0 +1,27 @@
+﻿@using MyInventory.Library.Extensions;
+@{
+    ViewBag.Title = "Email Sent";
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+@using (Html.BeginHtmlBlock("RootStyles"))
+{
+    <style>
+        .divider {
+            margin: 1em 0em 1em 0em;
+            height: 0.2em;
+            background-color: #DBE2EF;
+            border-radius: 0.5em;
+        }
+    </style>
+}
+
+<div class="w-100 h-100 overflow-auto text-dark">
+    <div class="row p-0 m-0">
+        <div class="container text-center" style="font-size: 2em;">
+            <h1 style="margin-top: 2em; font-size: 2em;">Your Password Has Been Reset</h1>
+            <div class="divider"></div>
+            <p class="text-left" style="font-size: 0.9em;">We have sent you an email with your new password. When you get the email, use the new password to log in and set up your new password.</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("SignOut", "User", new { area = "UserManagement" }, FormMethod.Post, new { id = "signoutForm", @class = "navbar-right" }))
+    {
+    @Html.AntiForgeryToken()
+
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item">
+            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "User", routeValues: new { area = "UserManagement" }, htmlAttributes: new { title = "Manage", @class = "nav-link text-siteoffwhite text-decoration-none" })
+        </li>
+        <li class="nav-item"><a href="javascript:document.getElementById('signoutForm').submit()" class="nav-link text-siteoffwhite text-decoration-none">Sign Out</a></li>
+    </ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item">@Html.ActionLink("Register", "Register", "User", routeValues: new { area = "UserManagement" }, htmlAttributes: new { id = "registerLink", @class = "nav-link text-siteoffwhite text-decoration-none" })</li>
+        <li class="nav-item">@Html.ActionLink("Sign in", "Signin", "User", routeValues: new { area = "UserManagement" }, htmlAttributes: new { id = "signinLink", @class = "nav-link text-siteoffwhite text-decoration-none" })</li>
+    </ul>
+}

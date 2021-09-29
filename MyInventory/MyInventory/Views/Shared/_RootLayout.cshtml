@@ -1,0 +1,27 @@
+﻿@using MyInventory.Library.Extensions;
+<!DOCTYPE html>
+<html class="h-100 w-100 bg-white">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <!--All pages will include jquery and the bootstrap css, so include them here-->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/popper")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Styles.Render("~/Content/css")
+
+    @Html.RenderHtmlBlock("HeadScripts")
+    @Html.RenderHtmlBlock("RootStyles")
+    
+</head>
+<body class="h-100 w-100 d-flex flex-column overflow-hidden bg-siteoffwhite">
+    <div class="w-100">
+        @Html.Partial("_NavBarPartial")
+    </div>
+    <div class="w-100 flex-grow-1 overflow-hidden">
+        @RenderBody()
+    </div>
+
+    @Html.RenderHtmlBlock("RootScripts")
+</body>
+</html>

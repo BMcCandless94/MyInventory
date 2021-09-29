@@ -1,0 +1,20 @@
+﻿@model MyInventory.Areas.InventoryManagement.Warehouse.Models.IndexViewModel
+@{
+    ViewBag.Title = "My Warehouses";
+    Layout = "~/Areas/InventoryManagement/Views/Shared/_WarehouseLayout.cshtml";
+}
+
+@if (Model.WarehouseSpecific && Model.Warehouses.Count() == 1 && Model.Warehouses[0] != null)
+{
+    @section TitleText{
+        @Model.Warehouses[0].Name
+    }
+    @Html.Partial("IndexSingle", Model, ViewData)
+}
+else
+{
+    @section TitleText{
+        Your Warehouses
+    }
+    @Html.Partial("IndexMultiple", Model, ViewData)
+}

@@ -1,0 +1,32 @@
+﻿@using MyInventory.Library.Extensions;
+@{
+    ViewBag.Title = "MyInventory - Contact Us";
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+@using (Html.BeginHtmlBlock("RootStyles"))
+{
+    <style>
+        .divider {
+            margin: 1em 0em 1em 0em;
+            height: 0.2em;
+            background-color: #DBE2EF;
+            border-radius: 0.5em;
+        }
+    </style>
+}
+
+<div class="w-100 h-100 overflow-auto text-dark">
+    <div class="row p-0 m-0">
+        <div class="container text-center" style="font-size: 2em;">
+            <h1 style="margin-top: 2em; font-size: 2em;">Contact Us</h1>
+            <div class="divider"></div>
+            <p class="text-left" style="font-size: 0.9em;">Have a question, or maybe just want to talk about something? Feel free to send us an email and we will get back with you shortly!</p>
+            <div class="mt-5" style="font-size: 0.6em;">
+                <address>
+                    <strong>MyInventory Support:</strong> <a href="mailto:Support@MyInventory.com">Support@MyInventory.com</a>
+                </address>
+            </div>
+        </div>
+    </div>
+</div>

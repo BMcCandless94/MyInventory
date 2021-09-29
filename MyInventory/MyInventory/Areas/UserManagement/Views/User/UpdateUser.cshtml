@@ -1,0 +1,32 @@
+﻿@model MyInventory.Areas.UserManagement.Models.UpdateUserViewModel
+
+@{
+    ViewBag.Title = "Update User";
+    Layout = "~/Areas/UserManagement/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="h-100 w-100 overflow-auto p-4">
+    @using (Html.BeginForm("UpdateUser", "User", new { area = "UserManagement" }, FormMethod.Post, null))
+    {
+        @Html.AntiForgeryToken()
+        <h2 class="mb-4">Change Password</h2>
+        @Html.ValidationSummary(null, new { @class = "text-danger", @style = "font-size: 0.9em;" })
+        <div class="form-group">
+            @Html.LabelFor(x => x.FirstName, new { @class = "lead" })
+            @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", @style = "max-width: 25em;" })
+            @Html.ValidationMessageFor(x => x.FirstName, null, new { @class = "text-danger", @style = "font-size: 0.8em;" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.LastName, new { @class = "lead" })
+            @Html.TextBoxFor(x => x.LastName, new { @class = "form-control", @style = "max-width: 25em;" })
+            @Html.ValidationMessageFor(x => x.LastName, null, new { @class = "text-danger", @style = "font-size: 0.8em;" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.Email, new { @class = "lead" })
+            @Html.TextBoxFor(x => x.Email, new { @class = "form-control", @style = "max-width: 25em;" })
+            @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger", @style = "font-size: 0.8em;" })
+        </div>
+        @Html.HiddenFor(x => x.UserID)
+        <button type="submit" class="btn btn-siteblue">Submit</button>
+    }
+</div>

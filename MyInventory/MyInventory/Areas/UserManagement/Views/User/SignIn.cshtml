@@ -1,0 +1,51 @@
+﻿@model MyInventory.Areas.UserManagement.Models.SignInViewModel
+
+@{
+    ViewBag.Title = "Sign In";
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+<div class="row h-100 p-0 m-0 overflow-auto">
+    <div class="col-4 bg-sitewarmblue text-siteoffwhite p-5" style="font-size: 4em; vertical-align:middle;">
+        <svg class="bi" viewBox="0, 0, 20, 20" height="1.5em">
+            <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#box-seam" />
+        </svg>
+        <span>Sign In</span>
+    </div>
+    <div class="col-8 py-5">
+        @using (Html.BeginForm("SignIn", "User", new { area = "UserManagement", returnUrl = ViewBag.returnUrl }, FormMethod.Post, null))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row px-5 py-0 m-0">
+                <div class="container-fluid">
+                    @Html.ValidationSummary(null, new { @class = "text-danger", @style = "font-size: 0.9em;" })
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Email, new { @class = "lead" })
+                        @Html.TextBoxFor(x => x.Email, new { @class = "form-control", @style = "max-width: 25em;" })
+                        @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger", @style = "font-size: 0.8em;" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Password, new { @class = "lead" })
+                        @Html.TextBoxFor(x => x.Password, new { @class = "form-control", @type = "password", @style = "max-width: 25em;" })
+                        @Html.ValidationMessageFor(x => x.Password, null, new { @class = "text-danger", @style = "font-size: 0.8em;" })
+                    </div>
+                    <div class="form-check">
+                        @Html.CheckBoxFor(x => x.RememberMe, new { @class = "form-check-input" })
+                        @Html.LabelFor(x => x.RememberMe, new { @class = "form-check-label", @style = "font-weight: 300;" })
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-4 pt-0 px-5 m-0">
+                <div class="container-fluid" style="font-size: 0.85em;">
+                    <div><a href="@Url.Action("ForgotPassword", "User", new { area = "UserManagement" })">Forgot Password?</a></div>
+                    <div><a href="@Url.Action("Register", "User", new { area = "UserManagement" })">Register A New Account</a></div>
+                </div>
+            </div>
+            <div class="row py-0 px-5 m-0">
+                <div class="container-fluid">
+                    <button type="submit" class="btn btn-siteblue">Sign In</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>

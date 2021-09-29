@@ -1,0 +1,15 @@
+﻿@{
+    Layout = "~/Views/Shared/_RootLayout.cshtml";
+}
+
+<div class="w-100 h-100 overflow-hidden d-flex">
+    @if (Request.IsAuthenticated)
+    {
+        <div class="h-100" style="min-width: 250px; background-color: #e9ecef;">
+            @Html.Partial("_MainSidebar");
+        </div>
+    }
+    <div class="flex-grow-1 h-100 overflow-hidden">
+        @RenderBody()
+    </div>
+</div>

@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "MyInventory";
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+<style>
+    .boxlabel {
+        font-size: 2em;
+        font-weight: 400;
+    }
+    .boxtext {
+        font-size: 1.2em;
+    }
+</style>
+
+<div class="row p-0 m-0 h-100 overflow-auto">
+    <div class="col-6 bg-sitewarmblue text-siteoffwhite p-5" style="font-size: 4em; vertical-align: middle;">
+        <svg class="bi" viewBox="0, 0, 20, 20" height="1.5em">
+            <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#box-seam" />
+        </svg>
+        <span>MyInventory</span>
+        <br />
+        <br />
+        <br />
+        <div style="font-size: 50%; font-weight: 300;">A free online inventory management system.</div>
+        <div style="font-size: 50%; font-weight: 300;">Just for you.</div>
+    </div>
+    <div class="col-6">
+        <div class="w-100 h-100 text-dark p-3 d-flex flex-column">
+            <div class="p-4 bg-white rounded shadow text-wrap d-flex align-items-center flex-fill">
+                <div>
+                    <div class="boxlabel">Create your own inventory warehouse</div>
+                    <br />
+                    <div class="boxtext">To start creating your very own free inventory management system, log in or sign up <a href="@Url.Action("SignIn", "User", new { area = "UserManagement" })">here</a>.</div>
+                </div>
+            </div>
+            <br />
+            <div class="p-4 bg-white rounded shadow text-wrap d-flex align-items-center flex-fill">
+                <div>
+                    <div class="boxlabel">See what we are all about</div>
+                    <br />
+                    <div class="boxtext">Want to know more? Get some info about how MyInventory works <a href="@Url.Action("About", "Home")">here</a>.</div>
+                </div>
+            </div>
+            <br />
+            <div class="p-4 bg-white rounded shadow text-wrap d-flex align-items-center flex-fill">
+                <div>
+                    <div class="boxlabel">Get in contact with us</div>
+                    <br />
+                    <div class="boxtext">Have any questions? Get in contact with us <a href="@Url.Action("Contact", "Home")">here</a>.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+﻿<nav class="navbar navbar-expand-lg text-siteoffwhite bg-siteblue">
+    <a class="navbar-brand text-siteoffwhite" href="@Url.Action("Index", "Home", new { area = ""})">
+        <span>MyInventory</span>
+        <svg class="bi" viewBox="0, 0, 20, 20" height="1.5em">
+            <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#box-seam" />
+        </svg>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item mx-1">
+                <a class="nav-link text-siteoffwhite text-decoration-none" href="@Url.Action("About", "Home", new { area = "" })">About Us</a>
+            </li>
+            <li class="nav-item mx-1">
+                <a class="nav-link text-siteoffwhite text-decoration-none" href="@Url.Action("Contact", "Home", new { area = "" })">Contact Us</a>
+            </li>
+        </ul>
+        @Html.Partial("_SignInPartial")
+    </div>
+</nav>

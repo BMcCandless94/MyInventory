@@ -1,0 +1,40 @@
+﻿@using MyInventory.Library.Extensions;
+@using MyInventory.Areas.InventoryManagement.Warehouse.Models;
+@{
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+@using (Html.BeginHtmlBlock("RootScripts"))
+{
+    <script>
+        $(document).ready(function () {
+            $('.menu-item').each(function () {
+                if ($(this).find('div').first().text() == 'Warehouse') {
+                    $(this).addClass('active');
+                    console.log('Setting Warehouse tab active');
+                }
+            });
+        });
+    </script>
+}
+
+
+<div class="h-100 w-100 overflow-hidden d-flex flex-column">
+    <div class="w-100 p-3 border-bottom border-sitecoolblue" style="font-size: 2.25em;">
+        <svg class="text-siteoffwhite bg-sitewarmblue rounded p-2" viewBox="0, 0, 20, 20" height="2em">
+            <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#shop-window" />
+        </svg>
+        <span class="text-dark">@RenderSection("TitleText", true)</span>
+    </div>
+    <div class="w-100 flex-grow-1 overflow-hidden">
+        <div class="h-100 w-100 overflow-hidden d-flex">
+            @if (ViewData.ContainsKey("WHSidebarData"))
+            {
+                @Html.Partial("_WarehouseSideBar", (SideBarViewModel)ViewData["WHSidebarData"], new ViewDataDictionary())
+            }
+            <div class="h-100 flex-grow-1">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>

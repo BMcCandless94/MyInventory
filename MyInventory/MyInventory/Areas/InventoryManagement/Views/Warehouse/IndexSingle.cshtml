@@ -1,0 +1,231 @@
+﻿@using MyInventory.Library.Extensions;
+@model MyInventory.Areas.InventoryManagement.Warehouse.Models.IndexViewModel
+
+<style>
+    .wh-actionlink {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background-color: transparent;
+    }
+
+        .wh-actionlink:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+</style>
+
+<div class="w-100 h-100 overflow-hidden d-flex flex-column">
+    <div class="w-100 border-bottom border-sitecoolblue shadow-sm">
+        <!--Warehouse Actions-->
+        <div class="w-100 px-2 py-1 overflow-hidden">
+            <div class="d-inline-block h-100 px-3">
+                <div class="font-italic">@Model.Warehouses[0].Description</div>
+            </div>
+            <div class="d-inline-block @(string.IsNullOrWhiteSpace(Model.Warehouses[0].Description) ? "" : "border-left border-sitecoolblue")  px-3">
+                <a href="@Url.Action("ManageWarehouse", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[0].WarehouseID })" class="text-dark wh-actionlink text-decoration-none p-2">
+                    Edit Details
+                </a>
+            </div>
+            <div class="d-inline-block border-left border-sitecoolblue px-3">
+                <a href="@Url.Action("DisableWarehouse", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[0].WarehouseID })" class="text-dark wh-actionlink text-decoration-none p-2">
+                    Disable Warehouse
+                </a>
+            </div>
+            <div class="d-inline-block border-left border-sitecoolblue px-3">
+                <a href="@Url.Action("CreateItem", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[0].WarehouseID })" class="text-dark wh-actionlink text-decoration-none p-2">
+                    Add Item
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="w-100 flex-grow-1 overflow-hidden">
+        <div class="w-100 h-100 overflow-auto">
+            @if (Model.Warehouses[0].Items.Count() == 0)
+            {
+                <!--No Items Defined-->
+                <div class="font-italic lead p-5 text-center text-dark" style="font-size: 1.35em;">
+                    You currently have no Items for this Warehouse. Create an Item by clicking Add Item above.
+                </div>
+            }
+            else
+            {
+                using (Html.BeginHtmlBlock("RootStyles"))
+                {
+                    <style>
+                        .item-table {
+                            width: 100%;
+                            position: relative;
+                            border-collapse: collapse;
+                        }
+
+                            .item-table th, td {
+                                padding: 0.5em 0.25em 0.5em 0.25em;
+                            }
+
+                            .item-table th {
+                                position: sticky;
+                                top: 0;
+                                background-color: #F9F7F7;
+                                box-shadow: 0em 0.1em 0.1em -0.07em #112D4E;
+                                z-index: 1;
+                            }
+
+                            .item-table tbody > tr {
+                                border-top: 1px solid rgba(0, 0, 0, 0.1);
+                            }
+
+                        .item-table-button {
+                            border-radius: 0em;
+                            background-color: transparent;
+                        }
+
+                            .item-table-button:hover {
+                                background-color: rgba(0, 0, 0, 0.1);
+                            }
+                    </style>
+                }
+
+                <div class="h-100 w-100 p-4 overflow-hidden">
+                    <div class="h-100 w-100 overflow-auto" style="font-size: 0.85em;">
+                        <table class="w-100 item-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>UOM</th>
+                                    <th>Price</th>
+                                    @if (ViewData.ContainsKey("TransactionTypes"))
+                                    {
+                                        <th>Transaction</th>
+                                    }
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Warehouses[0].Items.Count(); i++)
+                                {
+                                    <tr>
+                                        <td>@Model.Warehouses[0].Items[i].Name</td>
+                                        <td>@Model.Warehouses[0].Items[i].Description</td>
+                                        <td name="currentQuantity" data-itemid="@Model.Warehouses[0].Items[i].ItemID">@Model.Warehouses[0].Items[i].Quantity</td>
+                                        <td>@Model.Warehouses[0].Items[i].UOM</td>
+                                        <td>@(Model.Warehouses[0].Items[i].Price?.ToString("#,###,###.00"))</td>
+                                        <td>
+                                            <div class="form-inline">
+                                                <select class="form-control" name="transactionType" data-itemid="@Model.Warehouses[0].Items[i].ItemID">
+                                                    @foreach (MILibrary.Database.Entities.MI_TRANSACTIONTYPE_REF tt in (List<MILibrary.Database.Entities.MI_TRANSACTIONTYPE_REF>)ViewData["TransactionTypes"])
+                                                    {
+                                                        <option value="@tt.TRANSACTIONTYPE_ID">@tt.TRANSACTIONTYPE</option>
+                                                    }
+                                                </select>
+                                                <input type="number" class="form-control mx-1" style="max-width: 5em;" name="transactionAmount" data-itemid="@Model.Warehouses[0].Items[i].ItemID" value="0" />
+                                                <button type="button" name="transactionButton" data-itemid="@Model.Warehouses[0].Items[i].ItemID" class="btn btn-siteblue">Submit</button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button type="button" class="h-100 w-100 border-0 btn dropdown-toggle item-table-button" data-toggle="dropdown" id="dropdown_@(i)" aria-haspopup="true" aria-expanded="false"></button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdown_@(i)">
+                                                    <a class="dropdown-item" href="@Url.Action("ManageItem", "Warehouse", new { area = "InventoryManagement", ItemID = Model.Warehouses[0].Items[i].ItemID })">Edit Item</a>
+                                                    <a class="dropdown-item" href="@Url.Action("DisableItem", "Warehouse", new { area = "InventoryManagement", ItemID = Model.Warehouses[0].Items[i].ItemID })">Disable Item</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
+
+@using (Html.BeginHtmlBlock("RootScripts"))
+{
+    <script>
+        $(document).ready(function () {
+            //Attach an event to the transaction button
+            $('button[name=transactionButton]').on('click', function () {
+                //Set the ItemID
+                var itemID = $(this).data('itemid');
+
+                //Get the transaction type and amount
+                var ttype;
+                var tamount;
+
+                //Get the antiforgery token
+                var form = $('#__AjaxAntiForgeryForm');
+                var token = $('input[name="__RequestVerificationToken"]', form).val();
+
+                $('[name=transactionType]').each(function () {
+                    if ($(this).data('itemid') == itemID) {
+                        ttype = $(this).val();
+                        return false;
+                    }
+                });
+                $('[name=transactionAmount]').each(function () {
+                    if ($(this).data('itemid') == itemID) {
+                        tamount = $(this).val();
+                    }
+                });
+
+                //Create an item with the info in it and log it
+                var data = {
+                    __RequestVerificationToken: token,
+                    ItemID: itemID,
+                    TransactionType: ttype,
+                    TransactionAmount: tamount
+                };
+                console.log(data);
+
+                //Send it to the controller via ajax
+                $.ajax({
+                    url: '@Url.Action("PerformTransaction", "AJAX", new { area = "InventoryManagement" })',
+                    type: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    itemID: itemID,
+                    success: function (result) {
+                        //Check whether or not is was successful
+                        if (!result.Success) {
+                            //Alert the user
+                            alert(result.Error);
+                        } else {
+                            //Update the quantity for this item
+                            var itemID = this.itemID;
+                            $('[name=currentQuantity]').each(function () {
+                                if ($(this).data('itemid') == itemID) {
+                                    $(this).text(result.Quantity);
+                                    return false;
+                                }
+                            });
+
+                            //Also, set the text box back to 0
+                            $('[name=transactionAmount]').each(function () {
+                                if ($(this).data('itemid') == itemID) {
+                                    $(this).val(0);
+                                    return false;
+                                }
+                            });
+                        }
+                    },
+                    error: function (request, error) {
+                        //Alert the user that there was some error.
+                        alert('ERROR: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+}

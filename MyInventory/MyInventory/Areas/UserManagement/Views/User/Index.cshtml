@@ -1,0 +1,61 @@
+﻿@model MyInventory.Areas.UserManagement.Models.IndexViewModel
+@{
+    ViewBag.Title = "User Information";
+    Layout = "~/Areas/UserManagement/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="row h-100 p-0 m-0 overflow-auto">
+    <div class="col">
+        <!--User Information-->
+        <h3>Account Information</h3>
+        <div class="w-100 p-4 bg-white rounded shadow">
+            <div class="row">
+                <div class="col-6">
+                    @Html.LabelFor(x => x.FirstName)
+                </div>
+                <div class="col-6">
+                    <strong>@Model.FirstName</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    @Html.LabelFor(x => x.LastName)
+                </div>
+                <div class="col-6">
+                    <strong>@Model.LastName</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    @Html.LabelFor(x => x.Email)
+                </div>
+                <div class="col-6">
+                    <strong>@Model.Email</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    @Html.LabelFor(x => x.CreatedDTTM)
+                </div>
+                <div class="col-6">
+                    <strong>@Model.CreatedDTTM</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <!--Actions-->
+        <h3>Actions</h3>
+        <div class="w-100 p-4 bg-white rounded shadow">
+            <div class="pb-1">
+                @Html.ActionLink("Update Account Info", "UpdateUser", "User", new { area = "UserManagement" }, null)
+            </div>
+            <div class="pb-1">
+                @Html.ActionLink("Change Password", "ChangePassword", "User", new { area = "UserManagement" }, null)
+            </div>
+            <div class="pb-1">
+                @Html.ActionLink("Disable Account", "DisableUser", "User", new { area = "UserManagement" }, null)
+            </div>
+        </div>
+    </div>
+</div>

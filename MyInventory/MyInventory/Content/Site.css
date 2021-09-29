@@ -1,0 +1,64 @@
+﻿/*
+
+    Base color pallete for the website
+    #F9F7F7 Offwhite
+    #DBE2EF Cool Blue
+    #3F72AF Blue
+    #112D4E Warm Blue
+
+*/
+
+.bg-siteoffwhite {
+    background-color: #F9F7F7;
+}
+.text-siteoffwhite,
+a.text-siteoffwhite {
+    color: #F9F7F7;
+}
+
+.bg-sitecoolblue {
+    background-color: #DBE2EF;
+}
+.text-sitecoolblue,
+a.text-sitecoolblue {
+    color: #DBE2EF;
+}
+
+.bg-siteblue {
+    background-color: #3F72AF;
+}
+.text-siteblue,
+a.text-siteblue {
+    color: #3F72AF;
+}
+
+.bg-sitewarmblue {
+    background-color: #112D4E;
+}
+.text-sitewarmblue,
+a.text-sitewarmblue {
+    color: #112D4E;
+}
+
+
+.bg-siteblue .nav-item:hover {
+    background-color: rgba(0, 0, 0, .20);
+    border-radius: 0.5em;
+}
+nav.bg-siteblue .active {
+    background-color: rgba(0, 0, 0, .3) !important;
+    border-radius: 0.5em;
+}
+
+.btn-siteblue {
+    color: #F9F7F7;
+    background-color: #3F72AF;
+}
+    .btn-siteblue:hover {
+        color: #F9F7F7;
+        background-color: #2f5583;
+    }
+
+.border-sitecoolblue {
+    border-color: #DBE2EF;
+}

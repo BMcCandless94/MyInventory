@@ -1,0 +1,62 @@
+﻿@using MyInventory.Library.Extensions;
+@model MyInventory.Areas.InventoryManagement.Warehouse.Models.DisableWarehouseViewModel
+
+@{
+    ViewBag.Title = "Disable Warehouse";
+    Layout = "~/Areas/InventoryManagement/Views/Shared/_WarehouseLayout.cshtml";
+}
+
+@section TitleText{
+    Disable @Model.Name
+    }
+
+@using (Html.BeginHtmlBlock("RootStyles"))
+{
+    <style>
+        .divider {
+            margin: 1em 0em 1em 0em;
+            height: 0.2em;
+            background-color: #DBE2EF;
+            border-radius: 0.5em;
+        }
+    </style>
+}
+
+<div class="w-100 h-100 overflow-auto text-dark">
+    <div class="row p-0 m-0">
+        <div class="container text-center" style="font-size: 2em;">
+            <h1 style="font-size: 2em;">Are You Sure?</h1>
+            <div class="divider"></div>
+            <p class="text-left" style="font-size: 0.9em;">Are you sure you want to disable @(Model.Name)? The only way to recover it will be to contact support.</p>
+            <div class="mt-5" style="font-size: 0.6em;">
+                <button type="button" class="btn btn-siteblue" data-toggle="modal" data-target="#disableModal">Disable @(Model.Name)</button>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("DisableWarehouse", "Warehouse", new { area = "InventoryManagement" }, FormMethod.Post, null))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.WarehouseID)
+        @Html.HiddenFor(x => x.Name)
+        <!-- Modal -->
+        <div class="modal fade" id="disableModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="disableModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="disableModalLabel">Confirm</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        By clicking the Disable button below, you confirm that @(Model.Name) should be disabled.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-siteblue">Disable</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

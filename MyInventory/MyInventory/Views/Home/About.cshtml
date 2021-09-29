@@ -1,0 +1,60 @@
+﻿@using MyInventory.Library.Extensions;
+@{
+    ViewBag.Title = "MyInventory - About Us";
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+@using (Html.BeginHtmlBlock("RootStyles"))
+{
+    <style>
+        .divider {
+            margin: 1em 0em 1em 0em;
+            height: 0.2em;
+            background-color: #DBE2EF;
+            border-radius: 0.5em;
+        }
+    </style>
+}
+
+<div class="w-100 h-100 overflow-auto text-dark">
+    <div class="row p-0 m-0">
+        <div class="container text-center">
+            <h1 style="margin-top: 1em; font-size: 4em;">About Us</h1>
+            <div class="divider"></div>
+            <p class="text-left my-5" style="font-size: 1.5em;">
+                MyInventory is a free online platform where you can create your own virtual inventory warehouse to help track and control
+                the inventory of your products! MyInventory breaks down the inventory warehouse into three easy parts to help you track 
+                your inventory easily and accurately.
+            </p>
+            <div class="row">
+                <div class="col p-3">
+                    <div class="bg-white rounded shadow p-3 h-100">
+                        <h3>The Warehouse</h3>
+                        <p class="text-left">
+                            Create a warehouse that will be the central location where all of your items will be grouped together. You can create
+                            as many warehouses as needed in order to group your items however you would like.
+                        </p>
+                    </div>
+                </div>
+                <div class="col p-3">
+                    <div class="bg-white rounded shadow p-3 h-100">
+                        <h3>The Items</h3>
+                        <p class="text-left">
+                            Once you have created a warehouse, you can start defining what items are a part of that warehouse. Then, you can start
+                            tracking inventory of those items as quanitites change.
+                        </p>
+                    </div>
+                </div>
+                <div class="col p-3">
+                    <div class="bg-white rounded shadow p-3 h-100">
+                        <h3>The Metrics</h3>
+                        <p class="text-left">
+                            Once you have started using your warehouse to track items in and out as inventory fluctuates, you can view key metrics
+                            such as changes in inventory overtime, inventory turnover rate, and more.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

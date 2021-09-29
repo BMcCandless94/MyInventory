@@ -1,0 +1,56 @@
+﻿@using MyInventory.Library.Extensions
+
+@using (Html.BeginHtmlBlock("RootStyles")) {
+    <style>
+        .menu-item {
+            margin: 0.5em 1em 0.5em 1em;
+            padding: 0.5em;
+            border-radius: 0.5em;
+            text-decoration: none;
+            color: white;
+        }
+            .menu-item:hover {
+                background-color: rgba(0, 0, 0, 0.2);
+                text-decoration: none;
+                color: white;
+            }
+
+        .menu-item div {
+            text-align: left;
+            padding-left: 1em;
+        }
+        .menu-item svg {
+            padding-right: 1em;
+        }
+
+            .menu-item.active {
+                background-color: rgba(0, 0, 0, 0.35);
+            }
+    </style>
+}
+
+<div class="w-100 h-100 overflow-hidden d-flex flex-column bg-sitewarmblue text-siteoffwhite">
+    <div class="flex-grow-1">
+        <a href="@Url.Action("Index", "User", new { area = "UserManagement"})" class="menu-item d-flex">
+            <div class="flex-grow-1">User</div>
+            <svg class="bi" viewBox="0, 0, 20, 20" height="1.5em">
+                <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#person" />
+            </svg>
+        </a>
+        <a href="@Url.Action("Index", "Warehouse", new { area = "InventoryManagement"})" class="menu-item d-flex">
+            <div class="flex-grow-1">Warehouse</div>
+            <svg class="bi" viewBox="0, 0, 20, 20" height="1.5em">
+                <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#shop-window" />
+            </svg>
+        </a>
+        <a href="@Url.Action("Index", "Metrics", new { area = "InventoryManagement"})" class="menu-item d-flex">
+            <div class="flex-grow-1">Metrics</div>
+            <svg class="bi" viewBox="0, 0, 20, 20" height="1.5em">
+                <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#bar-chart" />
+            </svg>
+        </a>
+    </div>
+    <div>
+        @Html.Partial("_FooterPartial")
+    </div>
+</div>

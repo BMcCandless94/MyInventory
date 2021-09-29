@@ -1,0 +1,34 @@
+﻿@model MyInventory.Areas.InventoryManagement.Warehouse.Models.SideBarViewModel
+
+<style>
+    .wh-sb-item {
+        width: 100%;
+        padding: 0.5em;
+    }
+        .wh-sb-item:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        .wh-sb-item.active {
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .wh-sb-item a {
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+        }
+</style>
+
+<div class="h-100 border-right border-sitecoolblue" style="max-width: 250px; min-width: 150px;">
+    <div class="h-100 w-100" style="overflow-x: hidden; overflow-y: auto;">
+        <div class="wh-sb-item d-flex">
+            <a class="text-dark flex-grow-1 font-italic text-center" href="@Url.Action("CreateWarehouse", "Warehouse", new { area = "InventoryManagement" })">Add Warehouse</a>
+        </div>
+        @for(int i = 0; i < Model.Warehouses.Count(); i++)
+        {
+            <div class="wh-sb-item @(Model.Warehouses[i].Active ? "active" : "")">
+                <a class="text-dark" href="@Url.Action("Index", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[i].ID })">@Model.Warehouses[i].Name</a>
+            </div>
+        }
+    </div>
+</div>

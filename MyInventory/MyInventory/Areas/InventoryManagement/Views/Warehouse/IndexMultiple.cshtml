@@ -1,0 +1,44 @@
+﻿@model MyInventory.Areas.InventoryManagement.Warehouse.Models.IndexViewModel
+
+<div class="h-100 w-100 overflow-auto">
+    @if (Model.Warehouses.Count() == 0)
+    {
+        <!--No Warehouses Defined-->
+        <div class="font-italic lead p-5 text-center text-dark" style="font-size: 1.35em;">
+            You currently have no Warehouses. Create a Warehouse to start adding items to it by clicking Add Warehouse on the side menu.
+        </div>
+    }
+    else
+    {
+        for (int i = 0; i < Model.Warehouses.Count(); i++)
+        {
+            <div class="row p-2 m-0 text-dark">
+                <div class="w-100 h-100 m-0 px-1 py-3 bg-white rounded shadow-sm row">
+                    <div class="col">
+                        <div class="font-weight-bold" style="font-size: 1.5em;">
+                            <a class="text-decoration-none text-dark" href="@Url.Action("Index", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[i].WarehouseID })">@Model.Warehouses[i].Name</a>
+                        </div>
+                        <small class="d-block">
+                            @Model.Warehouses[i].Description
+                        </small>
+                    </div>
+                    <div class="col-2 border-left border-sitecoolblue">
+                        <a class="btn btn-siteblue h-100 w-100 d-flex align-items-center justify-content-center" href="@Url.Action("ManageWarehouse", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[i].WarehouseID })">
+                            Edit Details
+                        </a>
+                    </div>
+                    <div class="col-2 border-left border-sitecoolblue">
+                        <a class="btn btn-siteblue h-100 w-100 d-flex align-items-center justify-content-center" href="@Url.Action("Index", "Warehouse", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[i].WarehouseID })">
+                            View Warehouse
+                        </a>
+                    </div>
+                    <div class="col-2 border-left border-sitecoolblue">
+                        <a class="btn btn-siteblue h-100 w-100 d-flex align-items-center justify-content-center" href="@Url.Action("Index", "Metrics", new { area = "InventoryManagement", WarehouseID = Model.Warehouses[i].WarehouseID })">
+                            View Metrics
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

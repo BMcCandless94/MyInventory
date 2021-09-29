@@ -1,0 +1,33 @@
+﻿@using MyInventory.Library.Extensions;
+@{
+    Layout = "~/Views/Shared/_SidebarLayout.cshtml";
+}
+
+@using (Html.BeginHtmlBlock("RootScripts"))
+{
+    <script>
+        $(document).ready(function () {
+            $('.menu-item').each(function () {
+                if ($(this).find('div').first().text() == 'User') {
+                    $(this).addClass('active');
+                    console.log('Setting User tab active');
+                }
+            });
+        });
+    </script>
+}
+
+
+<div class="h-100 w-100 overflow-hidden d-flex flex-column">
+    <div class="w-100 p-3" style="font-size: 3em;">
+        <svg class="badge-info text-siteoffwhite bg-sitewarmblue rounded" viewBox="0, 0, 20, 20" height="2em">
+            <use xlink:href="~/Images/BootstrapIcons/bootstrap-icons.svg#person" />
+        </svg>
+        <span class="text-dark">Your Information</span>
+    </div>
+    <div class="w-100 flex-grow-1 overflow-hidden">
+        <div class="h-100 w-100 overflow-hidden">
+            @RenderBody()
+        </div>
+    </div>
+</div>
